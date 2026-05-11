@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -143,6 +142,7 @@
     .history-firm { font-weight: 500; }
     .history-meta { font-size: 12px; color: var(--text-muted); }
   </style>
+  <script>window.__nativeFetch = window.fetch.bind(window);</script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
@@ -264,11 +264,13 @@
 </div>
 
 <script>
+window.addEventListener('DOMContentLoaded', function() {
 (function() {
 
+  var nativeFetch = window.__nativeFetch || window.fetch.bind(window);
   var SUPABASE_URL  = 'https://mjmgwwhzovqnvedisaow.supabase.co';
   var SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qbWd3d2h6b3ZxbnZlZGlzYW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MTQ4MjQsImV4cCI6MjA5NDA5MDgyNH0.IpscZzKQWvozWkJgwSiJYC5rBRBcMOnqnJohCgtohIw';
-  var BACKEND       = 'http://localhost:3001';
+  var BACKEND       = 'https://shortlist-backend-8hlg.onrender.com';
 
   var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   var currentResults  = [];
@@ -460,7 +462,7 @@
     setStatus('<span class="spinner"></span>Searching...', false, true);
     setProgress(10);
 
-    fetch(BACKEND + '/api/search', {
+    nativeFetch(BACKEND + '/api/search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ school: school, firm: firm, role: role, size: size })
@@ -525,7 +527,7 @@
 
   function enrichPerson(p, i, school, firm) {
     var name=[p.first_name,p.last_name].filter(Boolean).join(' '), title=p.job_title||'', loc=getLocation(p);
-    return fetch(BACKEND+'/api/enrich',{
+    return nativeFetch(BACKEND+'/api/enrich',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({name:name,title:title,firm:firm,school:school,location:loc})
@@ -579,7 +581,7 @@
 
     btn.disabled = true; btn.textContent = 'Writing...';
 
-    fetch(BACKEND+'/api/draft-email', {
+    nativeFetch(BACKEND+'/api/draft-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -625,6 +627,7 @@
   }
 
 })();
+}); // end DOMContentLoaded
 </script>
 </body>
 </html>
