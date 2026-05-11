@@ -15,13 +15,11 @@
       --text-secondary: #6b6b67;
       --text-muted: #9b9b96;
       --border: rgba(0,0,0,0.12);
-      --border-mid: rgba(0,0,0,0.2);
+      --border-mid: rgba(0,0,0,0.22);
       --accent: #1a1a18;
       --accent-fg: #ffffff;
       --info-bg: #e6f1fb;
       --info-text: #185fa5;
-      --success-bg: #eaf3de;
-      --success-text: #3b6d11;
       --danger: #c0392b;
       --radius-md: 8px;
       --radius-lg: 12px;
@@ -38,13 +36,11 @@
         --text-secondary: #9b9b96;
         --text-muted: #6b6b67;
         --border: rgba(255,255,255,0.1);
-        --border-mid: rgba(255,255,255,0.18);
+        --border-mid: rgba(255,255,255,0.2);
         --accent: #f0ede8;
         --accent-fg: #1a1a18;
         --info-bg: #0c2d4a;
         --info-text: #85b7eb;
-        --success-bg: #173404;
-        --success-text: #c0dd97;
         --danger: #e57373;
       }
     }
@@ -55,7 +51,7 @@
       border-bottom: 0.5px solid var(--border);
       padding: 0 2rem; height: 52px;
       display: flex; align-items: center; justify-content: space-between;
-      background: var(--bg); position: sticky; top: 0; z-index: 10;
+      background: var(--bg); position: sticky; top: 0; z-index: 100;
     }
     .topbar-brand { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
     .topbar-brand svg { width: 18px; height: 18px; opacity: 0.7; }
@@ -69,10 +65,9 @@
     .card-title { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 1rem; }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-    @media (max-width: 600px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    @media (max-width: 580px) { .grid-2 { grid-template-columns: 1fr; } }
 
-    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field { display: flex; flex-direction: column; gap: 5px; position: relative; }
     label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; }
 
     input, select {
@@ -85,7 +80,32 @@
     input:focus, select:focus { border-color: var(--accent); }
     input[type="password"] { font-family: var(--font-mono); font-size: 12px; }
 
-    .search-row { display: flex; gap: 10px; align-items: flex-end; }
+    /* Autocomplete dropdown */
+    .autocomplete-list {
+      position: absolute;
+      top: 100%;
+      left: 0; right: 0;
+      background: var(--bg);
+      border: 0.5px solid var(--border-mid);
+      border-radius: var(--radius-md);
+      margin-top: 4px;
+      z-index: 200;
+      max-height: 220px;
+      overflow-y: auto;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    .autocomplete-item {
+      padding: 9px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      border-bottom: 0.5px solid var(--border);
+      color: var(--text-primary);
+    }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover, .autocomplete-item.active { background: var(--bg-secondary); }
+    .autocomplete-match { font-weight: 500; }
+
+    .search-row { display: flex; gap: 10px; align-items: flex-end; margin-top: 12px; }
     .search-row .field { flex: 1; }
 
     .btn {
@@ -106,11 +126,10 @@
     .status.error { color: var(--danger); }
 
     .spinner { width: 14px; height: 14px; border: 2px solid var(--border-mid); border-top-color: var(--text-primary); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
-    .ai-spinner { width: 10px; height: 10px; border: 1.5px solid var(--border-mid); border-top-color: var(--text-secondary); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .progress-wrap { height: 3px; background: var(--bg-tertiary); border-radius: 99px; margin-top: 10px; overflow: hidden; display: none; }
-    .progress-bar { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.3s ease; width: 0%; }
+    .progress-bar { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; width: 0%; }
 
     .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
     .results-count { font-size: 14px; color: var(--text-secondary); }
@@ -119,26 +138,45 @@
     .table-wrap { border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 0.5px solid var(--border); background: var(--bg-secondary); white-space: nowrap; }
-    td { padding: 11px 14px; border-bottom: 0.5px solid var(--border); vertical-align: top; }
+    td { padding: 11px 14px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--bg-secondary); }
 
-    .name-cell { display: flex; align-items: flex-start; gap: 8px; }
-    .avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--info-bg); color: var(--info-text); font-size: 11px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .name-cell { display: flex; align-items: center; gap: 8px; }
+    .avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--info-bg); color: var(--info-text); font-size: 11px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .name-text { font-weight: 500; font-size: 13px; }
-    .name-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .name-sub { font-size: 12px; color: var(--text-secondary); }
 
-    .linkedin-link { color: var(--info-text); text-decoration: none; font-size: 12px; display: inline-flex; align-items: center; gap: 3px; }
-    .linkedin-link:hover { text-decoration: underline; }
+    .linkedin-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 500;
+      color: var(--accent-fg);
+      background: #0077b5;
+      border: none; border-radius: 5px;
+      padding: 4px 10px; cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .linkedin-btn:hover { opacity: 0.85; }
+    .linkedin-btn svg { width: 11px; height: 11px; }
 
-    .ai-badge { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 4px; background: var(--success-bg); color: var(--success-text); font-weight: 500; margin-bottom: 4px; }
-    .ai-insight { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-    .ai-loading { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
-
-    .email-mono { font-size: 12px; color: var(--info-text); font-family: var(--font-mono); word-break: break-all; }
     .muted { color: var(--text-muted); font-size: 12px; }
     .hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
     #resultsSection { display: none; }
+
+    .v2-banner {
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      background: var(--bg-secondary);
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .v2-banner svg { flex-shrink: 0; opacity: 0.5; }
   </style>
 </head>
 <body>
@@ -151,40 +189,51 @@
     </svg>
     Alumni Finder
   </div>
-  <span class="topbar-sub">PDL + Groq AI</span>
+  <span class="topbar-sub">v1 — Powered by People Data Labs</span>
 </div>
 
 <div class="main">
   <h1 class="page-title">Find alumni at your target firms</h1>
-  <p class="page-sub">Search returns real profiles — Groq AI automatically enriches each result with email guesses and outreach insights</p>
+  <p class="page-sub">Search for professionals from your school working in IB, quant, and finance</p>
+
+  <div class="v2-banner">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M8 5v4M8 11v.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+    AI enrichment (email guesses + outreach insights) is coming in v2. This version returns real alumni data from PDL.
+  </div>
 
   <div class="card">
-    <div class="card-title">API Keys</div>
-    <div class="grid-2">
-      <div class="field">
-        <label for="pdlKey">People Data Labs key</label>
-        <input type="password" id="pdlKey" placeholder="Paste PDL key" />
-      </div>
-      <div class="field">
-        <label for="groqKey">Groq AI key</label>
-        <input type="password" id="groqKey" placeholder="Paste Groq key" />
-        <span class="hint">Free at console.groq.com — no card needed</span>
-      </div>
+    <div class="card-title">API Key</div>
+    <div class="field">
+      <label for="pdlKey">People Data Labs key</label>
+      <input type="password" id="pdlKey" placeholder="Paste your PDL API key" />
+      <span class="hint">Get a free key at peopledatalabs.com</span>
     </div>
   </div>
 
   <div class="card">
     <div class="card-title">Search</div>
-    <div class="grid-3">
+    <div class="grid-2">
       <div class="field">
         <label for="school">Your school</label>
         <input type="text" id="school" placeholder="e.g. Cornell University" autocomplete="off" />
       </div>
-      <div class="field">
-        <label for="firm">Target firm</label>
-        <input type="text" id="firm" placeholder="e.g. Goldman Sachs" autocomplete="off" />
+      <div class="field" id="firmField">
+        <label for="firmInput">Target firm</label>
+        <input type="text" id="firmInput" placeholder="Type to search firms..." autocomplete="off"
+          oninput="onFirmInput(event)" onkeydown="onFirmKeydown(event)" onfocus="onFirmInput(event)" />
+        <input type="hidden" id="firmValue" />
+        <div class="autocomplete-list" id="firmDropdown" style="display:none"></div>
       </div>
+    </div>
+    <div class="search-row">
       <div class="field">
+        <label for="role">Role / keyword <span style="text-transform:none;font-weight:400;letter-spacing:0">(optional)</span></label>
+        <input type="text" id="role" placeholder="e.g. Investment Banking Analyst, Quantitative Researcher" />
+      </div>
+      <div class="field" style="min-width:110px">
         <label for="resultSize">Max results</label>
         <select id="resultSize">
           <option value="10">10</option>
@@ -192,12 +241,6 @@
           <option value="50">50</option>
           <option value="100">100</option>
         </select>
-      </div>
-    </div>
-    <div class="search-row">
-      <div class="field">
-        <label for="role">Role / keyword <span style="text-transform:none;font-weight:400;letter-spacing:0">(optional)</span></label>
-        <input type="text" id="role" placeholder="e.g. Investment Banking Analyst, Quant Researcher" />
       </div>
       <button class="btn btn-primary" id="searchBtn" onclick="runSearch()">Search</button>
     </div>
@@ -221,12 +264,11 @@
       <table>
         <thead>
           <tr>
-            <th style="width:20%">Name</th>
-            <th style="width:18%">Title</th>
-            <th style="width:13%">Location</th>
-            <th style="width:11%">LinkedIn</th>
-            <th style="width:17%">Email (AI guess)</th>
-            <th style="width:21%">AI insight</th>
+            <th style="width:24%">Name</th>
+            <th style="width:26%">Title</th>
+            <th style="width:18%">Location</th>
+            <th style="width:16%">School (confirmed)</th>
+            <th style="width:16%">LinkedIn</th>
           </tr>
         </thead>
         <tbody id="resultsBody"></tbody>
@@ -236,10 +278,135 @@
 </div>
 
 <script>
-  let currentResults = [];
+  // ── Firm list ──────────────────────────────────────────────────────────────
+  const FIRMS = [
+    // Bulge bracket
+    "Goldman Sachs","Morgan Stanley","JPMorgan Chase","Bank of America","Citigroup",
+    "Barclays","Deutsche Bank","Credit Suisse","UBS","HSBC","BNP Paribas",
+    "Wells Fargo","RBC Capital Markets","Nomura","Mizuho","MUFG",
+    // Elite boutiques
+    "Evercore","Lazard","Centerview Partners","PJT Partners","Moelis & Company",
+    "Rothschild & Co","Houlihan Lokey","Jefferies","Guggenheim Partners",
+    "Perella Weinberg Partners","Allen & Company","Greenhill",
+    // Quant / HFT
+    "Citadel","Citadel Securities","Two Sigma","D.E. Shaw","Jane Street",
+    "Renaissance Technologies","Virtu Financial","Jump Trading","Hudson River Trading",
+    "Optiver","IMC Trading","SIG Susquehanna","Akuna Capital","DRW","Five Rings",
+    "Tower Research Capital","Millennium Management","Point72","Bridgewater Associates",
+    "AQR Capital Management","Man Group","Winton Group","Systematic Strategies",
+    // PE / VC
+    "Blackstone","KKR","Apollo Global Management","Carlyle Group","TPG Capital",
+    "Warburg Pincus","Bain Capital","General Atlantic","CVC Capital Partners",
+    "Advent International","Silver Lake","Vista Equity Partners","Thoma Bravo",
+    "Francisco Partners","Andreessen Horowitz","Sequoia Capital","Accel",
+    // Asset management
+    "BlackRock","Vanguard","Fidelity Investments","T. Rowe Price","PIMCO",
+    "Wellington Management","Balyasny Asset Management","Coatue Management",
+    "Tiger Global Management","Third Point","Elliott Management",
+    // Big 4 / Consulting
+    "McKinsey & Company","Boston Consulting Group","Bain & Company",
+    "Deloitte","PwC","EY","KPMG","Accenture",
+  ].sort();
 
-  document.addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+  // ── Fuzzy match ────────────────────────────────────────────────────────────
+  function fuzzyScore(query, target) {
+    const q = query.toLowerCase();
+    const t = target.toLowerCase();
+    if (t.startsWith(q)) return 3;
+    if (t.includes(q)) return 2;
+    // char-by-char subsequence
+    let qi = 0;
+    for (let i = 0; i < t.length && qi < q.length; i++) {
+      if (t[i] === q[qi]) qi++;
+    }
+    return qi === q.length ? 1 : 0;
+  }
 
+  function getFirmMatches(query) {
+    if (!query) return FIRMS.slice(0, 8);
+    const scored = FIRMS
+      .map(f => ({ f, s: fuzzyScore(query, f) }))
+      .filter(x => x.s > 0)
+      .sort((a, b) => b.s - a.s);
+    return scored.slice(0, 8).map(x => x.f);
+  }
+
+  let activeIdx = -1;
+
+  function onFirmInput(e) {
+    const val = document.getElementById('firmInput').value;
+    const matches = getFirmMatches(val);
+    renderDropdown(matches, val);
+    document.getElementById('firmValue').value = '';
+  }
+
+  function renderDropdown(matches, query) {
+    const dd = document.getElementById('firmDropdown');
+    if (!matches.length) { dd.style.display = 'none'; return; }
+    activeIdx = -1;
+    dd.innerHTML = '';
+    matches.forEach((firm, i) => {
+      const div = document.createElement('div');
+      div.className = 'autocomplete-item';
+      div.dataset.idx = i;
+      // Highlight matching chars
+      const q = query.toLowerCase();
+      const t = firm;
+      let highlighted = '';
+      let tl = t.toLowerCase();
+      let pos = tl.indexOf(q);
+      if (pos >= 0 && q.length > 0) {
+        highlighted = esc(t.slice(0, pos)) +
+          '<span class="autocomplete-match">' + esc(t.slice(pos, pos + q.length)) + '</span>' +
+          esc(t.slice(pos + q.length));
+      } else {
+        highlighted = esc(firm);
+      }
+      div.innerHTML = highlighted;
+      div.onmousedown = () => selectFirm(firm);
+      dd.appendChild(div);
+    });
+    dd.style.display = 'block';
+  }
+
+  function selectFirm(firm) {
+    document.getElementById('firmInput').value = firm;
+    document.getElementById('firmValue').value = firm;
+    document.getElementById('firmDropdown').style.display = 'none';
+    activeIdx = -1;
+  }
+
+  function onFirmKeydown(e) {
+    const dd = document.getElementById('firmDropdown');
+    const items = dd.querySelectorAll('.autocomplete-item');
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, items.length - 1);
+      items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, -1);
+      items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+    } else if (e.key === 'Enter') {
+      if (activeIdx >= 0 && items[activeIdx]) {
+        e.preventDefault();
+        selectFirm(items[activeIdx].textContent);
+      } else {
+        dd.style.display = 'none';
+        runSearch();
+      }
+    } else if (e.key === 'Escape') {
+      dd.style.display = 'none';
+    }
+  }
+
+  document.addEventListener('click', e => {
+    if (!document.getElementById('firmField').contains(e.target)) {
+      document.getElementById('firmDropdown').style.display = 'none';
+    }
+  });
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
   function esc(s) {
     return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
@@ -260,36 +427,43 @@
 
   function initials(f, l) { return ((f?.[0]||'')+(l?.[0]||'')).toUpperCase()||'?'; }
 
-  // Correctly extract location from PDL response
   function getLocation(p) {
-    // PDL returns location data in multiple possible fields
     const city    = p.location_locality || p.location_metro || '';
     const state   = p.location_region   || '';
     const country = p.location_country  || '';
     if (city && state) return city + ', ' + state;
-    if (city) return city;
-    if (state) return state;
+    if (city)    return city;
+    if (state)   return state;
     if (country) return country;
     return '—';
   }
 
+  function getSchool(p) {
+    if (!p.education || !p.education.length) return '—';
+    const ed = p.education.find(e => e.school && e.school.name) || p.education[0];
+    return ed?.school?.name || '—';
+  }
+
+  // ── Search ─────────────────────────────────────────────────────────────────
+  let currentResults = [];
+
   async function runSearch() {
     const school  = document.getElementById('school').value.trim();
-    const firm    = document.getElementById('firm').value.trim();
+    const firmRaw = document.getElementById('firmInput').value.trim();
+    const firm    = document.getElementById('firmValue').value.trim() || firmRaw;
     const role    = document.getElementById('role').value.trim();
     const pdlKey  = document.getElementById('pdlKey').value.trim();
-    const groqKey = document.getElementById('groqKey').value.trim();
     const size    = parseInt(document.getElementById('resultSize').value);
     const btn     = document.getElementById('searchBtn');
 
     if (!school || !firm) { setStatus('Please enter both a school and a firm.', true); return; }
-    if (!pdlKey)           { setStatus('Please enter your PDL API key.', true); return; }
+    if (!pdlKey)          { setStatus('Please enter your PDL API key.', true); return; }
 
     btn.disabled = true;
     currentResults = [];
     document.getElementById('resultsSection').style.display = 'none';
-    setStatus('<span class="spinner"></span>Searching PDL for ' + esc(school) + ' alumni at ' + esc(firm) + '...', false, true);
-    setProgress(5);
+    setStatus('<span class="spinner"></span>Searching for ' + esc(school) + ' alumni at ' + esc(firm) + '...', false, true);
+    setProgress(10);
 
     try {
       const must = [
@@ -307,39 +481,26 @@
       const data = await res.json();
 
       if (!res.ok) {
-        const msg = data?.error?.message || data?.message || 'PDL API error — check your key.';
-        setStatus(msg, true); setProgress(0); btn.disabled = false; return;
-      }
-
-      const people = data.data || [];
-      const total  = data.total || people.length;
-
-      if (!people.length) {
-        setStatus('No results. Try full school name e.g. "Cornell University" not "Cornell".', false);
+        setStatus(data?.error?.message || data?.message || 'PDL error — check your API key.', true);
         setProgress(0); btn.disabled = false; return;
       }
 
-      currentResults = people.map(p => ({ ...p, aiEmail: null, aiInsight: null }));
-      renderTable(school, firm, total);
-      document.getElementById('resultsSection').style.display = 'block';
-      setProgress(20);
+      const people = data.data  || [];
+      const total  = data.total || people.length;
 
-      if (groqKey) {
-        setStatus('<span class="spinner"></span>AI enriching ' + people.length + ' profiles...', false, true);
-        await Promise.all(currentResults.map((p, i) => enrichPerson(p, i, groqKey, school, firm)));
-        setStatus('Done — ' + people.length + ' profiles enriched.' + (total > size ? ' PDL has ' + total + ' total matches; increase max results to see more.' : ''));
-      } else {
-        setStatus('No Groq key entered — showing PDL data only. Add a Groq key to enable AI enrichment.');
-        currentResults.forEach((_, i) => {
-          const ins = document.getElementById('insight-' + i);
-          if (ins) ins.innerHTML = '<span class="muted">Add Groq key</span>';
-          const em  = document.getElementById('email-'   + i);
-          if (em)  em.innerHTML  = '<span class="muted">Add Groq key</span>';
-        });
+      if (!people.length) {
+        setStatus('No results found. Try the full school name — e.g. "Cornell University" not "Cornell".', false);
+        setProgress(0); btn.disabled = false; return;
       }
 
+      currentResults = people;
+      renderTable(school, firm, total, size);
+      document.getElementById('resultsSection').style.display = 'block';
+
       setProgress(100);
-      setTimeout(() => setProgress(0), 800);
+      setTimeout(() => setProgress(0), 600);
+      const extra = total > size ? ' PDL has ' + total.toLocaleString() + ' total — increase max results to see more.' : '';
+      setStatus('Found ' + people.length + ' alumni.' + extra);
 
     } catch (err) {
       setStatus('Network error: ' + err.message, true);
@@ -349,23 +510,24 @@
     btn.disabled = false;
   }
 
-  function renderTable(school, firm, total) {
+  function renderTable(school, firm, total, size) {
     const body  = document.getElementById('resultsBody');
     const count = document.getElementById('resultCount');
+    const n     = currentResults.length;
 
-    const showing = currentResults.length;
-    count.innerHTML = '<strong>' + showing + '</strong> showing' +
-      (total > showing ? ' of <strong>' + total + '</strong> total' : '') +
+    count.innerHTML = '<strong>' + n + '</strong> result' + (n !== 1 ? 's' : '') +
+      (total > n ? ' of <strong>' + total.toLocaleString() + '</strong> total' : '') +
       ' &mdash; ' + esc(school) + ' &rarr; ' + esc(firm);
 
     body.innerHTML = '';
 
-    currentResults.forEach((p, i) => {
+    currentResults.forEach(p => {
       const name     = [p.first_name, p.last_name].filter(Boolean).join(' ') || 'Unknown';
-      const title    = p.job_title || '—';
+      const title    = p.job_title        || '—';
       const company  = p.job_company_name || firm;
       const location = getLocation(p);
-      const linkedin = p.linkedin_url || null;
+      const schoolConfirmed = getSchool(p);
+      const linkedin = p.linkedin_url     || null;
       const init     = initials(p.first_name, p.last_name);
 
       const tr = document.createElement('tr');
@@ -381,109 +543,36 @@
         </td>
         <td style="font-size:13px;color:var(--text-secondary)">${esc(title)}</td>
         <td style="font-size:13px;color:var(--text-secondary)">${esc(location)}</td>
+        <td style="font-size:12px;color:var(--text-secondary)">${esc(schoolConfirmed)}</td>
         <td>
           ${linkedin
-            ? `<a class="linkedin-link" href="${esc(linkedin)}" target="_blank" rel="noopener">
-                View
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-                  <path d="M2 8L8 2M4 2h4v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            ? `<a class="linkedin-btn" href="https://www.linkedin.com/in/${esc(linkedinSlug(linkedin))}" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                  <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.882 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/>
                 </svg>
+                LinkedIn
               </a>`
             : '<span class="muted">—</span>'}
         </td>
-        <td id="email-${i}"><div class="ai-loading"><div class="ai-spinner"></div></div></td>
-        <td id="insight-${i}"><div class="ai-loading"><div class="ai-spinner"></div>Enriching...</div></td>
       `;
       body.appendChild(tr);
     });
   }
 
-  async function enrichPerson(p, i, groqKey, school, firm) {
-    const name     = [p.first_name, p.last_name].filter(Boolean).join(' ');
-    const title    = p.job_title || '';
-    const location = getLocation(p);
-
-    const prompt = `You are a finance recruiting assistant. Given this alumni profile, return ONLY a JSON object — no markdown, no explanation, no extra text.
-
-Name: ${name}
-Title: ${title}
-Firm: ${firm}
-School: ${school}
-Location: ${location}
-
-Return exactly this format:
-{"email": "<best guess work email using firm's known convention, e.g. firstname.lastname@gs.com, or 'unknown' if unsure>", "insight": "<1-2 sentence insight for a student cold-emailing this person — what they do, a hook, or outreach tip>"}`;
-
+  function linkedinSlug(url) {
+    // Extract slug from full URL for clean redirect
     try {
-      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + groqKey
-        },
-        body: JSON.stringify({
-          model: 'llama3-8b-8192',
-          messages: [{ role: 'user', content: prompt }],
-          max_tokens: 220,
-          temperature: 0.3
-        })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.error?.message || 'Groq error');
-      }
-
-      const raw = data?.choices?.[0]?.message?.content || '';
-      let parsed = { email: 'unknown', insight: '—' };
-      try {
-        const m = raw.match(/\{[\s\S]*?\}/);
-        if (m) parsed = JSON.parse(m[0]);
-      } catch(e) {
-        // If JSON parse fails, try to extract manually
-        const emailMatch   = raw.match(/"email"\s*:\s*"([^"]+)"/);
-        const insightMatch = raw.match(/"insight"\s*:\s*"([^"]+)"/);
-        if (emailMatch)   parsed.email   = emailMatch[1];
-        if (insightMatch) parsed.insight = insightMatch[1];
-      }
-
-      currentResults[i].aiEmail   = parsed.email   || 'unknown';
-      currentResults[i].aiInsight = parsed.insight || '—';
-
-      const emailCell   = document.getElementById('email-'   + i);
-      const insightCell = document.getElementById('insight-' + i);
-
-      if (emailCell) {
-        emailCell.innerHTML = parsed.email && parsed.email !== 'unknown'
-          ? `<span class="email-mono">${esc(parsed.email)}</span>`
-          : '<span class="muted">Unknown</span>';
-      }
-
-      if (insightCell) {
-        insightCell.innerHTML = `
-          <div class="ai-insight">
-            <div class="ai-badge">AI</div>
-            <div>${esc(parsed.insight || '—')}</div>
-          </div>`;
-      }
-
-      const done = currentResults.filter(r => r.aiInsight !== null).length;
-      setProgress(20 + Math.round((done / currentResults.length) * 80));
-
-    } catch(err) {
-      currentResults[i].aiEmail   = 'error';
-      currentResults[i].aiInsight = 'error';
-      const ins = document.getElementById('insight-' + i);
-      if (ins) ins.innerHTML = `<span class="muted" title="${esc(err.message)}">Error</span>`;
-      const em  = document.getElementById('email-'   + i);
-      if (em)  em.innerHTML  = '<span class="muted">—</span>';
-    }
+      const u = new URL(url.startsWith('http') ? url : 'https://' + url);
+      const parts = u.pathname.split('/').filter(Boolean);
+      const inIdx = parts.indexOf('in');
+      if (inIdx >= 0 && parts[inIdx + 1]) return parts[inIdx + 1];
+    } catch(e) {}
+    return url.replace(/.*linkedin\.com\/in\//,'').replace(/\//,'');
   }
 
   function exportCSV() {
     if (!currentResults.length) return;
-    const headers = ['Name','First Name','Last Name','Title','Company','Location','LinkedIn','Email (AI)','AI Insight'];
+    const headers = ['Name','First Name','Last Name','Title','Company','Location','School (PDL)','LinkedIn URL'];
     const rows = currentResults.map(p => [
       [p.first_name, p.last_name].filter(Boolean).join(' '),
       p.first_name || '',
@@ -491,9 +580,8 @@ Return exactly this format:
       p.job_title  || '',
       p.job_company_name || '',
       getLocation(p),
-      p.linkedin_url || '',
-      p.aiEmail      || '',
-      p.aiInsight    || ''
+      getSchool(p),
+      p.linkedin_url || ''
     ]);
     const csv = [headers,...rows]
       .map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(','))
