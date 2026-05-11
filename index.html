@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shortlist — Finance Alumni Finder</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <title>Shortlist — Sign in</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -40,11 +40,10 @@
     }
 
     .brand {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 600;
       letter-spacing: -0.5px;
-      margin-bottom: 8px;
-      color: var(--text-primary);
+      margin-bottom: 6px;
     }
 
     .brand-sub {
@@ -65,20 +64,21 @@
 
     .tabs {
       display: flex;
-      border-bottom: 0.5px solid var(--border);
       margin-bottom: 1.5rem;
+      border-bottom: 0.5px solid var(--border);
     }
 
     .tab {
       flex: 1;
-      padding: 8px;
+      padding: 10px 0;
       text-align: center;
       font-size: 14px;
       font-weight: 500;
       color: var(--text-muted);
       cursor: pointer;
       border-bottom: 2px solid transparent;
-      margin-bottom: -0.5px;
+      margin-bottom: -1px;
+      user-select: none;
       transition: color 0.15s, border-color 0.15s;
     }
 
@@ -87,12 +87,26 @@
       border-bottom-color: var(--text-primary);
     }
 
-    .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .panel { display: none; }
+    .panel.active { display: block; }
 
-    label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 500;
+    }
 
     input {
-      height: 38px;
+      height: 40px;
       border: 0.5px solid var(--border-mid);
       border-radius: var(--radius-md);
       background: var(--bg-secondary);
@@ -109,7 +123,7 @@
 
     .btn {
       width: 100%;
-      height: 40px;
+      height: 42px;
       border-radius: var(--radius-md);
       font-size: 14px;
       font-weight: 500;
@@ -118,49 +132,48 @@
       border: none;
       background: var(--accent);
       color: var(--accent-fg);
-      margin-top: 8px;
+      margin-top: 4px;
       transition: opacity 0.15s;
     }
 
     .btn:hover { opacity: 0.85; }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
     .alert {
       font-size: 13px;
-      padding: 10px 12px;
+      padding: 10px 14px;
       border-radius: var(--radius-md);
-      margin-bottom: 12px;
-      display: none;
+      margin-bottom: 16px;
+      line-height: 1.4;
     }
 
-    .alert.error { background: var(--danger-bg); color: var(--danger); display: block; }
-    .alert.success { background: var(--success-bg); color: var(--success); display: block; }
+    .alert.error   { background: var(--danger-bg);  color: var(--danger);  }
+    .alert.success { background: var(--success-bg); color: var(--success); }
+    .alert.hidden  { display: none; }
 
-    .footer-link {
+    .foot {
       text-align: center;
       font-size: 12px;
       color: var(--text-muted);
       margin-top: 1.5rem;
     }
-
-    #signupPanel { display: none; }
   </style>
 </head>
 <body>
 
   <div class="brand">Shortlist</div>
-  <p class="brand-sub">Finance alumni finder — find your path in</p>
+  <p class="brand-sub">Finance alumni finder</p>
 
   <div class="card">
     <div class="tabs">
-      <div class="tab active" id="loginTab" onclick="switchTab('login')">Sign in</div>
-      <div class="tab" id="signupTab" onclick="switchTab('signup')">Create account</div>
+      <div class="tab active" id="tab-login" onclick="switchTab('login')">Sign in</div>
+      <div class="tab" id="tab-signup" onclick="switchTab('signup')">Create account</div>
     </div>
 
-    <div id="alert" class="alert"></div>
+    <div id="alert" class="alert hidden"></div>
 
-    <!-- Login -->
-    <div id="loginPanel">
+    <!-- Login panel -->
+    <div class="panel active" id="panel-login">
       <div class="field">
         <label for="loginEmail">Email</label>
         <input type="email" id="loginEmail" placeholder="you@university.edu" />
@@ -172,8 +185,8 @@
       <button class="btn" id="loginBtn" onclick="handleLogin()">Sign in</button>
     </div>
 
-    <!-- Signup -->
-    <div id="signupPanel">
+    <!-- Signup panel -->
+    <div class="panel" id="panel-signup">
       <div class="field">
         <label for="signupName">Full name</label>
         <input type="text" id="signupName" placeholder="Your name" />
@@ -190,24 +203,31 @@
     </div>
   </div>
 
-  <div class="footer-link">By signing up you agree to use this responsibly.</div>
+  <p class="foot">Use responsibly. Not affiliated with any firm or university.</p>
 
 <script>
   const SUPABASE_URL = 'https://mjmgwwhzovqnvedisaow.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qbWd3d2h6b3ZxbnZlZGlzYW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MTQ4MjQsImV4cCI6MjA5NDA5MDgyNH0.IpscZzKQWvozWkJgwSiJYC5rBRBcMOnqnJohCgtohIw';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
   // Redirect if already logged in
-  supabase.auth.getSession().then(({ data }) => {
+  sb.auth.getSession().then(({ data }) => {
     if (data.session) window.location.href = 'app.html';
   });
 
+  let currentTab = 'login';
+
   function switchTab(tab) {
-    document.getElementById('loginPanel').style.display  = tab === 'login'  ? 'block' : 'none';
-    document.getElementById('signupPanel').style.display = tab === 'signup' ? 'block' : 'none';
-    document.getElementById('loginTab').classList.toggle('active',  tab === 'login');
-    document.getElementById('signupTab').classList.toggle('active', tab === 'signup');
-    clearAlert();
+    currentTab = tab;
+
+    document.getElementById('tab-login').classList.toggle('active',  tab === 'login');
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+    document.getElementById('panel-login').classList.toggle('active',  tab === 'login');
+    document.getElementById('panel-signup').classList.toggle('active', tab === 'signup');
+
+    hideAlert();
   }
 
   function showAlert(msg, type) {
@@ -216,9 +236,8 @@
     el.className = 'alert ' + type;
   }
 
-  function clearAlert() {
-    const el = document.getElementById('alert');
-    el.className = 'alert';
+  function hideAlert() {
+    document.getElementById('alert').className = 'alert hidden';
   }
 
   async function handleLogin() {
@@ -226,17 +245,21 @@
     const password = document.getElementById('loginPassword').value;
     const btn      = document.getElementById('loginBtn');
 
-    if (!email || !password) { showAlert('Please fill in all fields.', 'error'); return; }
+    hideAlert();
 
-    btn.disabled = true;
+    if (!email || !password) {
+      showAlert('Please fill in your email and password.', 'error');
+      return;
+    }
+
+    btn.disabled    = true;
     btn.textContent = 'Signing in...';
-    clearAlert();
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await sb.auth.signInWithPassword({ email, password });
 
     if (error) {
       showAlert(error.message, 'error');
-      btn.disabled = false;
+      btn.disabled    = false;
       btn.textContent = 'Sign in';
     } else {
       window.location.href = 'app.html';
@@ -249,34 +272,42 @@
     const password = document.getElementById('signupPassword').value;
     const btn      = document.getElementById('signupBtn');
 
-    if (!name || !email || !password) { showAlert('Please fill in all fields.', 'error'); return; }
-    if (password.length < 8) { showAlert('Password must be at least 8 characters.', 'error'); return; }
+    hideAlert();
 
-    btn.disabled = true;
+    if (!name || !email || !password) {
+      showAlert('Please fill in all fields.', 'error');
+      return;
+    }
+
+    if (password.length < 8) {
+      showAlert('Password must be at least 8 characters.', 'error');
+      return;
+    }
+
+    btn.disabled    = true;
     btn.textContent = 'Creating account...';
-    clearAlert();
 
-    const { error } = await supabase.auth.signUp({
-      email, password,
+    const { error } = await sb.auth.signUp({
+      email,
+      password,
       options: { data: { full_name: name } }
     });
 
     if (error) {
       showAlert(error.message, 'error');
-      btn.disabled = false;
+      btn.disabled    = false;
       btn.textContent = 'Create account';
     } else {
       showAlert('Account created! Check your email to confirm, then sign in.', 'success');
-      btn.disabled = false;
+      btn.disabled    = false;
       btn.textContent = 'Create account';
     }
   }
 
-  // Enter key support
   document.addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
-    const loginVisible = document.getElementById('loginPanel').style.display !== 'none';
-    if (loginVisible) handleLogin(); else handleSignup();
+    if (currentTab === 'login') handleLogin();
+    else handleSignup();
   });
 </script>
 </body>
